@@ -24,20 +24,32 @@ public class OrderStateManager {
      * @param orderId 订单id
      * @param event 流转的订单操作事件
      * @param status 当前订单状态
-     * @return
+     * @return 扭转后的订单状态
      */
     public int handleEvent(final String orderId, OrderStatusEnum event, final int status) {
         if (this.isFinalStatus(status)) {
             throw new IllegalArgumentException("handle event can't process final state order.");
         }
-
-        return 0;
+        // 获取对应处理器,根据入参状态和时间获取订单流转的结果状态
+        AbstractOrderState abstractOrderState = this.getStateProcessor(event);
+        int resState = abstractOrderState.handleEvent(status, event);
+        // 得到结果状态，在对应的processor中处理订单数据及其相关信息
+        AbstractOrderProcessor orderProcessor = this.getOrderProcessor(event);
+        if (!orderProcessor.process(orderId, resState)) {
+            throw new IllegalStateException(String.format("订单状态流转失败，订单id:%s", orderId));
+        }
+        return resState;
     }
 
     private AbstractOrderState getStateProcessor(OrderStatusEnum event) {
 
         return null;
     }
+
+    private AbstractOrderProcessor getOrderProcessor(OrderStatusEnum event) {
+        return null;
+    }
+
 
     /**
      * 判断是不是已完成订单
