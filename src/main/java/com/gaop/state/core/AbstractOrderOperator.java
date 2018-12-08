@@ -8,9 +8,9 @@ import lombok.Data;
  * @date 2018/10/29 17:47
  **/
 @Data
-public abstract class AbstractOrderState {
+public abstract class AbstractOrderOperator {
 
-    private int status;
+    int status;
 
     public abstract int handleEvent(int orderStatus, OrderStatusEnum orderStatusEnum);
 }
